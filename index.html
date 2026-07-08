@@ -3,11 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>スプレッドシート サンプル | EarthWISE</title>
-<meta name="description" content="ログイン不要のスプレッドシート・サンプル。番号ルームに保存すれば、別の端末から同じ番号を開いてコピーできます。">
+<title>スプレッドシート | EarthWISE</title>
 <meta name="robots" content="noindex">
-<meta property="og:title" content="スプレッドシート サンプル | EarthWISE">
-<meta property="og:description" content="ログイン不要で使えるスプレッドシートのサンプルページ。">
+<meta property="og:title" content="スプレッドシート | EarthWISE">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://sheet.earthwisecompany.com/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,8 +16,6 @@
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/style.css?v=27">
 <style>
-.sh-note{background:var(--bg-alt);border:1px solid var(--line);border-radius:4px;padding:16px 18px;font-size:.82rem;line-height:1.9;color:var(--gray);max-width:56em;margin-top:8px}
-.sh-note strong{color:var(--ink);font-weight:700}
 .sh-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:20px 0 10px}
 .sh-bar button{font-family:var(--sans);font-size:.82rem;font-weight:500;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:8px 14px;cursor:pointer;transition:border-color .2s,background .2s}
 .sh-bar button:hover{border-color:var(--navy)}
@@ -27,26 +23,27 @@
 .sh-bar button.primary:hover{opacity:.85}
 .sh-bar .sh-sep{flex:1}
 .sh-bar .sh-dim{font-family:var(--mono);font-size:.74rem;color:var(--accent)}
-.sh-room{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 14px;font-size:.82rem;color:var(--gray)}
+.sh-room{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 6px;font-size:.82rem;color:var(--gray)}
 .sh-room input{font-family:var(--mono);font-size:.85rem;width:100px;height:34px;border:1px solid var(--line);border-radius:3px;padding:0 10px;color:var(--ink)}
 .sh-room .st{font-family:var(--mono);font-size:.74rem}
 .sh-room .st.ok{color:#3b7d3b}.sh-room .st.busy{color:var(--accent)}.sh-room .st.err{color:#b23}
-.sh-wrap{border:1px solid var(--line);border-radius:4px;overflow:auto;max-height:68vh;background:var(--bg)}
-table.sh{border-collapse:collapse;font-size:.85rem;width:max-content;min-width:100%}
-table.sh th{position:sticky;top:0;z-index:2;background:var(--bg-alt);color:var(--gray);font-weight:500;font-family:var(--mono);font-size:.72rem;border:1px solid var(--line);padding:0;text-align:center;height:28px;min-width:120px}
-table.sh th.corner{left:0;z-index:3;min-width:44px;width:44px}
-table.sh td.rownum{position:sticky;left:0;z-index:1;background:var(--bg-alt);color:var(--accent);font-family:var(--mono);font-size:.72rem;text-align:center;border:1px solid var(--line);min-width:44px;width:44px;user-select:none}
-table.sh td{border:1px solid var(--line);padding:0}
-table.sh td input{width:100%;min-width:120px;height:32px;border:0;background:transparent;font:inherit;color:var(--ink);padding:0 8px;outline:none}
+.sh-wrap{border:1px solid var(--line);border-radius:4px;overflow:auto;height:70vh;background:var(--bg)}
+table.sh{border-collapse:separate;border-spacing:0;font-size:.85rem;table-layout:fixed}
+table.sh th,table.sh td{box-sizing:border-box;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+table.sh th{position:sticky;top:0;z-index:2;background:var(--bg-alt);color:var(--gray);font-weight:500;font-family:var(--mono);font-size:.72rem;height:28px;text-align:center;width:120px}
+table.sh th.corner{left:0;z-index:3;width:48px}
+table.sh td.rownum{position:sticky;left:0;z-index:1;background:var(--bg-alt);color:var(--accent);font-family:var(--mono);font-size:.72rem;text-align:center;width:48px;user-select:none}
+table.sh td{width:120px;height:32px;padding:0}
+table.sh td input{width:100%;height:31px;border:0;background:transparent;font:inherit;color:var(--ink);padding:0 8px;outline:none}
 table.sh td input:focus{background:#eef4ff;box-shadow:inset 0 0 0 2px var(--navy)}
-.sh-toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;font-size:.82rem;padding:10px 18px;border-radius:4px;opacity:0;pointer-events:none;transition:.25s;z-index:50}
-.sh-toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+table.sh tr.spacer td{padding:0;border:0;background:transparent}
 </style>
 </head>
 <body>
 
 <section style="padding-top:28px">
   <div class="wrap">
+
     <div class="sh-room">
       <span>ルーム番号</span>
       <input id="room" type="text" inputmode="numeric" placeholder="例: 1001" autocomplete="off">
@@ -67,7 +64,7 @@ table.sh td input:focus{background:#eef4ff;box-shadow:inset 0 0 0 2px var(--navy
       <span class="sh-dim" id="dim">0 × 0</span>
     </div>
 
-    <div class="sh-wrap">
+    <div class="sh-wrap" id="wrap">
       <table class="sh" id="grid"></table>
     </div>
   </div>
@@ -79,36 +76,51 @@ table.sh td input:focus{background:#eef4ff;box-shadow:inset 0 0 0 2px var(--navy
   </div>
 </footer>
 
-<div class="sh-toast" id="toast"></div>
+<div class="sh-toast" id="toast" style="position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;font-size:.82rem;padding:10px 18px;border-radius:4px;opacity:0;pointer-events:none;transition:.25s;z-index:50"></div>
 
-<script src="assets/warp.js?v=18"></script>
 <script>
 (function(){
   var API='/api/sheet';
-  var MINR=15, MINC=6;
+  var MINR=50, MINC=38, ROWH=33, HEADH=29;
   var data=[], roomId='';
+  var wrap=document.getElementById('wrap');
+  var grid=document.getElementById('grid');
+  var dimEl=document.getElementById('dim');
 
   function colName(n){var s='';n++;while(n>0){n--;s=String.fromCharCode(65+(n%26))+s;n=Math.floor(n/26);}return s;}
   function ensure(r,c){while(data.length<r)data.push([]);for(var i=0;i<data.length;i++){while(data[i].length<c)data[i].push('');}}
   function rows(){return Math.max(data.length,MINR);}
-  function cols(){var m=MINC;for(var i=0;i<data.length;i++)m=Math.max(m,data[i].length);return m;}
+  function cols(){var m=MINC;for(var i=0;i<data.length;i++)if(data[i].length>m)m=data[i].length;return m;}
   function escAttr(s){return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-
-  function render(){
-    var R=rows(),C=cols();ensure(R,C);
-    var t=document.getElementById('grid'),html='<thead><tr><th class="corner"></th>';
-    for(var c=0;c<C;c++)html+='<th>'+colName(c)+'</th>';
-    html+='</tr></thead><tbody>';
-    for(var r=0;r<R;r++){
-      html+='<tr><td class="rownum">'+(r+1)+'</td>';
-      for(var c=0;c<C;c++){var v=(data[r]&&data[r][c]!=null)?data[r][c]:'';html+='<td><input data-r="'+r+'" data-c="'+c+'" value="'+escAttr(v)+'"></td>';}
-      html+='</tr>';
-    }
-    document.getElementById('grid').innerHTML=html+'</tbody>';
-    document.getElementById('dim').textContent=R+' × '+C;
-  }
   function setCell(r,c,v){ensure(r+1,c+1);data[r][c]=v;}
 
+  // ---- virtualized render (見える行だけ描画) ----
+  var _lf=-1,_ll=-1,_lc=-1;
+  function renderWindow(force){
+    var C=cols(), total=rows();
+    var st=wrap.scrollTop, view=wrap.clientHeight;
+    var first=Math.max(0, Math.floor(st/ROWH)-5);
+    var vis=Math.ceil(view/ROWH)+10;
+    var last=Math.min(total, first+vis);
+    if(!force && first===_lf && last===_ll && C===_lc) return;
+    _lf=first;_ll=last;_lc=C;
+    var h='<thead><tr><th class="corner"></th>';
+    for(var c=0;c<C;c++)h+='<th>'+colName(c)+'</th>';
+    h+='</tr></thead><tbody>';
+    if(first>0)h+='<tr class="spacer" style="height:'+(first*ROWH)+'px"><td colspan="'+(C+1)+'"></td></tr>';
+    for(var r=first;r<last;r++){
+      h+='<tr><td class="rownum">'+(r+1)+'</td>';
+      for(var c=0;c<C;c++){var v=(data[r]&&data[r][c]!=null)?data[r][c]:'';h+='<td><input data-r="'+r+'" data-c="'+c+'" value="'+escAttr(v)+'"></td>';}
+      h+='</tr>';
+    }
+    if(last<total)h+='<tr class="spacer" style="height:'+((total-last)*ROWH)+'px"><td colspan="'+(C+1)+'"></td></tr>';
+    grid.innerHTML=h+'</tbody>';
+    dimEl.textContent=total+' × '+C;
+  }
+  var raf=false;
+  wrap.addEventListener('scroll',function(){if(raf)return;raf=true;requestAnimationFrame(function(){raf=false;renderWindow(false);});});
+
+  // ---- parse / export ----
   function parse(text){
     text=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
     var delim=text.indexOf('\t')>=0?'\t':',';
@@ -121,6 +133,25 @@ table.sh td input:focus{background:#eef4ff;box-shadow:inset 0 0 0 2px var(--navy
     if(out.length>1&&out[out.length-1].length==1&&out[out.length-1][0]==='')out.pop();
     return out;
   }
+  function parseHTMLTable(html){
+    try{
+      var doc=new DOMParser().parseFromString(html,'text/html');
+      var table=doc.querySelector('table');
+      if(!table)return null;
+      var out=[], trs=table.querySelectorAll('tr');
+      for(var r=0;r<trs.length;r++){
+        var cells=trs[r].querySelectorAll('th,td'), row=[];
+        for(var c=0;c<cells.length;c++){
+          var cell=cells[c].cloneNode(true);
+          var brs=cell.querySelectorAll('br');
+          for(var b=0;b<brs.length;b++)brs[b].replaceWith(document.createTextNode('\n'));
+          row.push((cell.textContent||'').replace(/ /g,' '));
+        }
+        out.push(row);
+      }
+      return out.length?out:null;
+    }catch(e){return null;}
+  }
   function trim(){
     while(data.length&&data[data.length-1].every(function(x){return x==null||x==='';}))data.pop();
     var maxc=0;for(var i=0;i<data.length;i++)for(var j=data[i].length-1;j>=0;j--){if(data[i][j]!=null&&data[i][j]!==''){if(j+1>maxc)maxc=j+1;break;}}
@@ -129,69 +160,96 @@ table.sh td input:focus{background:#eef4ff;box-shadow:inset 0 0 0 2px var(--navy
   function toCSV(){trim();var lines=[];for(var r=0;r<data.length;r++){var cells=[];for(var c=0;c<data[r].length;c++){var v=data[r][c]==null?'':String(data[r][c]);if(/[",\n]/.test(v))v='"'+v.replace(/"/g,'""')+'"';cells.push(v);}lines.push(cells.join(','));}return lines.join('\r\n');}
   function toTSV(){trim();var lines=[];for(var r=0;r<data.length;r++){var cells=[];for(var c=0;c<data[r].length;c++)cells.push((data[r][c]==null?'':String(data[r][c])).replace(/\t/g,' '));lines.push(cells.join('\t'));}return lines.join('\n');}
 
-  function toast(msg){var el=document.getElementById('toast');el.textContent=msg;el.classList.add('on');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('on');},2200);}
-  function setStatus(txt,cls){var s=document.getElementById('status');s.textContent=txt;s.className='st'+(cls?' '+cls:'');}
+  // ---- gzip ----
+  function gzip(str){var s=new Blob([str]).stream().pipeThrough(new CompressionStream('gzip'));return new Response(s).arrayBuffer();}
+  function gunzip(buf){var s=new Blob([buf]).stream().pipeThrough(new DecompressionStream('gzip'));return new Response(s).text();}
 
-  // --- local cache ---
+  function toast(msg){var el=document.getElementById('toast');el.textContent=msg;el.style.opacity='1';el.style.transform='translateX(-50%) translateY(0)';clearTimeout(el._t);el._t=setTimeout(function(){el.style.opacity='0';el.style.transform='translateX(-50%) translateY(20px)';},2400);}
+  function setStatus(t,cls){var s=document.getElementById('status');s.textContent=t;s.className='st'+(cls?' '+cls:'');}
+
+  // ---- local cache ----
   function lsKey(){return 'ew_sheet_'+(roomId||'local');}
-  var saveLocalT;
-  function saveLocal(){clearTimeout(saveLocalT);saveLocalT=setTimeout(function(){try{localStorage.setItem(lsKey(),JSON.stringify(data));}catch(e){}},250);}
+  var slT;
+  function saveLocal(){clearTimeout(slT);slT=setTimeout(function(){try{localStorage.setItem(lsKey(),JSON.stringify(data));}catch(e){}},400);}
   function loadLocal(){try{var s=localStorage.getItem(lsKey());if(s){data=JSON.parse(s);return true;}}catch(e){}return false;}
 
-  // --- server (room) ---
+  // ---- server sync ----
   var pushT;
-  function schedulePush(){if(!roomId)return;setStatus('保存中…','busy');clearTimeout(pushT);pushT=setTimeout(pushNow,800);}
+  function schedulePush(){if(!roomId)return;setStatus('保存中…','busy');clearTimeout(pushT);pushT=setTimeout(pushNow,900);}
   function pushNow(){
     if(!roomId)return;trim();
-    fetch(API+'?id='+encodeURIComponent(roomId),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(data)})
-      .then(function(r){if(!r.ok)throw 0;setStatus('保存済み','ok');})
-      .catch(function(){setStatus('保存に失敗（未デプロイ？）','err');});
+    gzip(JSON.stringify(data)).then(function(buf){
+      return fetch(API+'?id='+encodeURIComponent(roomId),{method:'POST',headers:{'content-type':'application/octet-stream'},body:buf});
+    }).then(function(r){if(!r.ok)throw 0;setStatus('保存済み','ok');})
+      .catch(function(){setStatus('保存に失敗','err');});
   }
   function pull(){
     if(!roomId)return;setStatus('取得中…','busy');
-    fetch(API+'?id='+encodeURIComponent(roomId),{cache:'no-store'})
-      .then(function(r){if(!r.ok)throw 0;return r.json();})
-      .then(function(j){if(j&&j.data){data=j.data;render();saveLocal();}setStatus('保存済み','ok');})
-      .catch(function(){setStatus('サーバー未接続（この端末内で編集）','err');loadLocal();render();});
+    fetch(API+'?id='+encodeURIComponent(roomId),{cache:'no-store'}).then(function(r){
+      if(r.status===204){setStatus('保存済み','ok');return null;}
+      if(!r.ok)throw 0;return r.arrayBuffer();
+    }).then(function(buf){
+      if(!buf)return;
+      return gunzip(buf).then(function(txt){data=JSON.parse(txt);renderWindow(true);saveLocal();setStatus('保存済み','ok');});
+    }).catch(function(){setStatus('サーバー未接続（端末内で編集）','err');loadLocal();renderWindow(true);});
   }
-
   function openRoom(id){
     id=String(id||'').replace(/[^0-9A-Za-z_-]/g,'').slice(0,32);
     if(!id){toast('ルーム番号を入力してください');return;}
-    if(id!==roomId){location.search='?'+id;return;} // reload into room
+    if(id!==roomId){location.search='?'+id;return;}
     pull();
   }
 
-  // --- events ---
-  var grid=document.getElementById('grid');
-  grid.addEventListener('input',function(e){var i=e.target;if(i.tagName!=='INPUT')return;setCell(+i.dataset.r,+i.dataset.c,i.value);saveLocal();schedulePush();document.getElementById('dim').textContent=rows()+' × '+cols();});
-  grid.addEventListener('keydown',function(e){var i=e.target;if(i.tagName!=='INPUT')return;var r=+i.dataset.r,c=+i.dataset.c;if(e.key==='Enter'){e.preventDefault();focusCell(r+1,c);}else if(e.key==='ArrowDown')focusCell(r+1,c);else if(e.key==='ArrowUp')focusCell(r-1,c);});
-  function focusCell(r,c){if(r<0||c<0)return;if(r>=rows()){ensure(r+1,cols());render();}var el=grid.querySelector('input[data-r="'+r+'"][data-c="'+c+'"]');if(el){el.focus();el.select();}}
-  grid.addEventListener('paste',function(e){var i=e.target;if(i.tagName!=='INPUT')return;var txt=(e.clipboardData||window.clipboardData).getData('text');if(!txt||(txt.indexOf('\t')<0&&txt.indexOf('\n')<0))return;e.preventDefault();var mat=parse(txt),r0=+i.dataset.r,c0=+i.dataset.c;for(var r=0;r<mat.length;r++)for(var c=0;c<mat[r].length;c++)setCell(r0+r,c0+c,mat[r][c]);saveLocal();schedulePush();render();focusCell(r0,c0);});
+  // ---- events ----
+  grid.addEventListener('input',function(e){var i=e.target;if(i.tagName!=='INPUT')return;setCell(+i.dataset.r,+i.dataset.c,i.value);saveLocal();schedulePush();dimEl.textContent=rows()+' × '+cols();});
+  grid.addEventListener('keydown',function(e){var i=e.target;if(i.tagName!=='INPUT')return;var r=+i.dataset.r,c=+i.dataset.c;
+    if(e.key==='Enter'){e.preventDefault();focusCell(r+1,c);}else if(e.key==='ArrowDown'){e.preventDefault();focusCell(r+1,c);}else if(e.key==='ArrowUp'){e.preventDefault();focusCell(r-1,c);}});
+  function focusCell(r,c){
+    if(r<0||c<0)return;
+    if(r>=rows()){ensure(r+1,cols());}
+    // ensure row is within rendered window
+    var top=r*ROWH;
+    if(top<wrap.scrollTop||top>wrap.scrollTop+wrap.clientHeight-2*ROWH){wrap.scrollTop=Math.max(0,top-wrap.clientHeight/2);}
+    renderWindow(true);
+    var el=grid.querySelector('input[data-r="'+r+'"][data-c="'+c+'"]');
+    if(el){el.focus();el.select();}
+  }
+  grid.addEventListener('paste',function(e){
+    var i=e.target;if(i.tagName!=='INPUT')return;
+    var cb=e.clipboardData||window.clipboardData;
+    var mat=null, html=cb.getData('text/html');
+    if(html && /<table/i.test(html)) mat=parseHTMLTable(html);
+    if(!mat){var txt=cb.getData('text');if(!txt||(txt.indexOf('\t')<0&&txt.indexOf('\n')<0))return;mat=parse(txt);}
+    if(!mat||!mat.length)return;
+    e.preventDefault();
+    var r0=+i.dataset.r,c0=+i.dataset.c;
+    for(var r=0;r<mat.length;r++)for(var c=0;c<mat[r].length;c++)setCell(r0+r,c0+c,mat[r][c]);
+    saveLocal();schedulePush();renderWindow(true);
+  });
 
-  document.getElementById('addRow').onclick=function(){ensure(rows()+1,cols());render();};
-  document.getElementById('addCol').onclick=function(){ensure(rows(),cols()+1);render();};
-  document.getElementById('clear').onclick=function(){if(confirm('すべてのセルを消去します。よろしいですか？')){data=[];render();saveLocal();schedulePush();toast('クリアしました');}};
-  document.getElementById('copy').onclick=function(){var tsv=toTSV();var ok=function(){toast('表をコピーしました（Excel等に貼り付けできます）');};if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(tsv).then(ok,function(){fallbackCopy(tsv);});else fallbackCopy(tsv);render();};
-  function fallbackCopy(t){var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('表をコピーしました');}catch(e){prompt('コピーしてください',t);}document.body.removeChild(ta);}
-  document.getElementById('save').onclick=function(){var csv=toCSV();var blob=new Blob([new Uint8Array([0xEF,0xBB,0xBF]),csv],{type:'text/csv'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='earthwise-sheet'+(roomId?'-'+roomId:'')+'.csv';a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},1000);render();};
+  document.getElementById('addRow').onclick=function(){ensure(rows()+1,cols());renderWindow(true);};
+  document.getElementById('addCol').onclick=function(){ensure(rows(),cols()+1);renderWindow(true);};
+  document.getElementById('clear').onclick=function(){if(confirm('すべてのセルを消去します。よろしいですか？')){data=[];_lf=-1;renderWindow(true);saveLocal();schedulePush();toast('クリアしました');}};
+  document.getElementById('copy').onclick=function(){var tsv=toTSV();if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(tsv).then(function(){toast('表をコピーしました');},function(){fb(tsv);});else fb(tsv);renderWindow(true);};
+  function fb(t){var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('表をコピーしました');}catch(e){}document.body.removeChild(ta);}
+  document.getElementById('save').onclick=function(){var csv=toCSV();var blob=new Blob([new Uint8Array([0xEF,0xBB,0xBF]),csv],{type:'text/csv'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sheet'+(roomId?'-'+roomId:'')+'.csv';a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},1000);renderWindow(true);};
   document.getElementById('loadBtn').onclick=function(){document.getElementById('file').click();};
-  document.getElementById('file').onchange=function(e){var f=e.target.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(){data=parse(String(rd.result).replace(/^﻿/,''));render();saveLocal();schedulePush();toast('読み込みました');};rd.readAsText(f);e.target.value='';};
+  document.getElementById('file').onchange=function(e){var f=e.target.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(){data=parse(String(rd.result).replace(/^﻿/,''));_lf=-1;renderWindow(true);saveLocal();schedulePush();toast('読み込みました');};rd.readAsText(f);e.target.value='';};
   document.getElementById('open').onclick=function(){openRoom(document.getElementById('room').value);};
   document.getElementById('room').addEventListener('keydown',function(e){if(e.key==='Enter')openRoom(this.value);});
   document.getElementById('pull').onclick=pull;
 
-  // --- init ---
+  // ---- init ----
   var q=location.search.replace(/^\?/,''),m=q.match(/(?:^|&)id=([\w-]+)/);
   roomId=m?m[1]:((q.match(/^([\w-]+)/)||[])[1]||'');
   roomId=(roomId||'').replace(/[^0-9A-Za-z_-]/g,'').slice(0,32);
   if(roomId){
     document.getElementById('room').value=roomId;
     document.getElementById('pull').hidden=false;
-    loadLocal();render();  // show cached instantly
-    pull();                // then sync from server
+    loadLocal();renderWindow(true);
+    pull();
   }else{
-    loadLocal();render();
+    loadLocal();renderWindow(true);
     setStatus('番号なし（この端末内のみ）','');
   }
 })();
