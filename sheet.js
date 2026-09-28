@@ -3,7 +3,7 @@
 // 事前準備: Pages プロジェクト設定で KV ネームスペースを作成し、変数名「SHEET_KV」でバインド。
 // データは gzip 圧縮済みバイナリをそのまま保存/返却する（中身は検証しない）。
 // 注意: id（ルーム番号）はパスワードではない。機密情報は保存しない前提。
-const MAX = 8 * 1024 * 1024; // 8MB（画像埋め込みも想定しつつ悪用の被害を抑える）
+const MAX = 24 * 1024 * 1024; // 24MB（KVの上限25MB未満）
 
 export async function onRequest(context) {
   const { request, env } = context;

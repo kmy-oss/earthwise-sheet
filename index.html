@@ -347,24 +347,19 @@ table.sh tr.spacer td{padding:0;border:0;background:transparent}
     try{document.execCommand('copy');toast('文書をコピーしました');}catch(e){}
     sel.removeAllRanges();
   }
-  // 画像: 自動で縮小・JPEG圧縮して本文に埋め込み
+  // 画像: 圧縮せず原寸・原画質のまま本文に埋め込み
   function insertImage(file){
     if(!file||!/^image\//.test(file.type))return;
-    var url=URL.createObjectURL(file), img=new Image();
-    img.onload=function(){
-      var MAX=1200,w=img.naturalWidth||1,h=img.naturalHeight||1,s=Math.min(1,MAX/Math.max(w,h));
-      var cw=Math.max(1,Math.round(w*s)),ch=Math.max(1,Math.round(h*s));
-      var cv=document.createElement('canvas');cv.width=cw;cv.height=ch;
-      var ctx=cv.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,cw,ch);ctx.drawImage(img,0,0,cw,ch);
-      var d;try{d=cv.toDataURL('image/jpeg',0.72);}catch(e){d=url;}
-      URL.revokeObjectURL(url);
+    var rd=new FileReader();
+    rd.onload=function(){
+      var d=rd.result;
       richEl.focus();
       try{document.execCommand('insertHTML',false,'<img src="'+d+'" alt="">');}
       catch(e){var im=document.createElement('img');im.src=d;richEl.appendChild(im);}
       rich=richEl.innerHTML;saveLocal();schedulePush();toast('画像を貼り付けました');
     };
-    img.onerror=function(){URL.revokeObjectURL(url);};
-    img.src=url;
+    rd.onerror=function(){toast('画像の読み込みに失敗しました');};
+    rd.readAsDataURL(file);
   }
   function imagesFrom(list){var a=[];if(!list)return a;for(var i=0;i<list.length;i++){var it=list[i];var f=it.getAsFile?it.getAsFile():it;if(f&&/^image\//.test(f.type))a.push(f);}return a;}
   richEl.addEventListener('paste',function(e){
