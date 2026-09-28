@@ -16,17 +16,20 @@
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/style.css?v=27">
 <style>
-.sh-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:20px 0 10px}
+.sh-room{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 6px;font-size:.82rem;color:var(--gray)}
+.sh-room input{font-family:var(--mono);font-size:.85rem;width:100px;height:34px;border:1px solid var(--line);border-radius:3px;padding:0 10px;color:var(--ink)}
+.sh-room .st{font-family:var(--mono);font-size:.74rem}
+.sh-room .st.ok{color:#3b7d3b}.sh-room .st.busy{color:var(--accent)}.sh-room .st.err{color:#b23}
+.mode-toggle{display:inline-flex;border:1px solid var(--line);border-radius:4px;overflow:hidden;margin:16px 0 4px}
+.mode-toggle button{font-family:var(--sans);font-size:.85rem;font-weight:500;color:var(--gray);background:var(--bg);border:0;padding:9px 18px;cursor:pointer}
+.mode-toggle button.on{background:var(--navy);color:#fff}
+.sh-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0 10px}
 .sh-bar button{font-family:var(--sans);font-size:.82rem;font-weight:500;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:8px 14px;cursor:pointer;transition:border-color .2s,background .2s}
 .sh-bar button:hover{border-color:var(--navy)}
 .sh-bar button.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
 .sh-bar button.primary:hover{opacity:.85}
 .sh-bar .sh-sep{flex:1}
 .sh-bar .sh-dim{font-family:var(--mono);font-size:.74rem;color:var(--accent)}
-.sh-room{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 6px;font-size:.82rem;color:var(--gray)}
-.sh-room input{font-family:var(--mono);font-size:.85rem;width:100px;height:34px;border:1px solid var(--line);border-radius:3px;padding:0 10px;color:var(--ink)}
-.sh-room .st{font-family:var(--mono);font-size:.74rem}
-.sh-room .st.ok{color:#3b7d3b}.sh-room .st.busy{color:var(--accent)}.sh-room .st.err{color:#b23}
 .sh-wrap{border:1px solid var(--line);border-radius:4px;overflow:auto;height:70vh;background:var(--bg)}
 table.sh{border-collapse:separate;border-spacing:0;font-size:.85rem;table-layout:fixed}
 table.sh th,table.sh td{box-sizing:border-box;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
@@ -37,6 +40,19 @@ table.sh td{width:120px;height:32px;padding:0}
 table.sh td input{width:100%;height:31px;border:0;background:transparent;font:inherit;color:var(--ink);padding:0 8px;outline:none}
 table.sh td input:focus{background:#eef4ff;box-shadow:inset 0 0 0 2px var(--navy)}
 table.sh tr.spacer td{padding:0;border:0;background:transparent}
+.rt-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:14px 0 10px}
+.rt-bar button{font-family:var(--sans);font-size:.82rem;font-weight:500;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:7px 12px;cursor:pointer;min-width:36px}
+.rt-bar button:hover{border-color:var(--navy)}
+.rt-bar .sep{width:1px;height:20px;background:var(--line);margin:0 3px}
+.rt{border:1px solid var(--line);border-radius:4px;background:var(--bg);min-height:70vh;max-height:78vh;overflow:auto;padding:26px 30px;font-size:1rem;line-height:1.9;color:var(--ink);outline:none}
+.rt:focus{border-color:var(--navy)}
+.rt h2{font-size:1.4rem;font-weight:700;margin:1.1em 0 .5em;line-height:1.4}
+.rt h3{font-size:1.15rem;font-weight:700;margin:1em 0 .4em;line-height:1.5}
+.rt p{margin:0 0 .8em}
+.rt ul,.rt ol{margin:0 0 .8em;padding-left:1.6em}
+.rt li{margin:.2em 0}
+.rt a{color:var(--navy);text-decoration:underline}
+.rt:empty::before{content:attr(data-ph);color:#b7b7b0}
 </style>
 </head>
 <body>
@@ -52,21 +68,48 @@ table.sh tr.spacer td{padding:0;border:0;background:transparent}
       <button id="pull" type="button" hidden style="height:34px;font-family:var(--sans);font-size:.8rem;border:1px solid var(--line);background:var(--bg);border-radius:3px;padding:0 12px;cursor:pointer">最新を取得</button>
     </div>
 
-    <div class="sh-bar">
-      <button id="addRow" type="button">＋ 行</button>
-      <button id="addCol" type="button">＋ 列</button>
-      <button id="clear" type="button">クリア</button>
-      <button id="copy" class="primary" type="button">全部コピー</button>
-      <button id="loadBtn" type="button">CSV読込</button>
-      <button id="save" type="button">CSV保存</button>
-      <input id="file" type="file" accept=".csv,.tsv,.txt" hidden>
-      <span class="sh-sep"></span>
-      <span class="sh-dim" id="dim">0 × 0</span>
+    <div class="mode-toggle" id="modeToggle">
+      <button type="button" data-mode="sheet" class="on">表（スプレッドシート）</button>
+      <button type="button" data-mode="rich">文書（リッチテキスト）</button>
     </div>
 
-    <div class="sh-wrap" id="wrap">
-      <table class="sh" id="grid"></table>
+    <div id="sheetMode">
+      <div class="sh-bar">
+        <button id="addRow" type="button">＋ 行</button>
+        <button id="addCol" type="button">＋ 列</button>
+        <button id="clear" type="button">クリア</button>
+        <button id="copy" class="primary" type="button">全部コピー</button>
+        <button id="loadBtn" type="button">CSV読込</button>
+        <button id="save" type="button">CSV保存</button>
+        <input id="file" type="file" accept=".csv,.tsv,.txt" hidden>
+        <span class="sh-sep"></span>
+        <span class="sh-dim" id="dim">0 × 0</span>
+      </div>
+      <div class="sh-wrap" id="wrap">
+        <table class="sh" id="grid"></table>
+      </div>
     </div>
+
+    <div id="richMode" hidden>
+      <div class="rt-bar" id="rtBar">
+        <button type="button" data-cmd="bold" title="太字"><b>B</b></button>
+        <button type="button" data-cmd="italic" title="斜体"><i>I</i></button>
+        <button type="button" data-cmd="underline" title="下線"><u>U</u></button>
+        <span class="sep"></span>
+        <button type="button" data-block="h2">見出し</button>
+        <button type="button" data-block="h3">小見出し</button>
+        <button type="button" data-block="p">本文</button>
+        <span class="sep"></span>
+        <button type="button" data-cmd="insertUnorderedList">• リスト</button>
+        <button type="button" data-cmd="insertOrderedList">1. リスト</button>
+        <span class="sep"></span>
+        <button type="button" data-cmd="removeFormat">書式解除</button>
+        <button type="button" id="richClear">クリア</button>
+        <button type="button" id="richCopy">コピー</button>
+      </div>
+      <div class="rt" id="rich" contenteditable="true" data-ph="ここに文章を書けます。上のボタンで見出し・太字・リストなどを設定できます。"></div>
+    </div>
+
   </div>
 </section>
 
@@ -75,11 +118,15 @@ table.sh tr.spacer td{padding:0;border:0;background:transparent}
 <script>
 (function(){
   var API='/api/sheet';
-  var MINR=50, MINC=38, ROWH=33, HEADH=29;
-  var data=[], roomId='';
+  var MINR=50, MINC=38, ROWH=33;
+  var data=[], rich='', mode='sheet', roomId='';
   var wrap=document.getElementById('wrap');
   var grid=document.getElementById('grid');
   var dimEl=document.getElementById('dim');
+  var richEl=document.getElementById('rich');
+  var modeToggle=document.getElementById('modeToggle');
+  var sheetModeEl=document.getElementById('sheetMode');
+  var richModeEl=document.getElementById('richMode');
 
   function colName(n){var s='';n++;while(n>0){n--;s=String.fromCharCode(65+(n%26))+s;n=Math.floor(n/26);}return s;}
   function ensure(r,c){while(data.length<r)data.push([]);for(var i=0;i<data.length;i++){while(data[i].length<c)data[i].push('');}}
@@ -139,7 +186,7 @@ table.sh tr.spacer td{padding:0;border:0;background:transparent}
           var cell=cells[c].cloneNode(true);
           var brs=cell.querySelectorAll('br');
           for(var b=0;b<brs.length;b++)brs[b].replaceWith(document.createTextNode('\n'));
-          row.push((cell.textContent||'').replace(/ /g,' '));
+          row.push((cell.textContent||'').replace(/ /g,' '));
         }
         out.push(row);
       }
@@ -154,6 +201,25 @@ table.sh tr.spacer td{padding:0;border:0;background:transparent}
   function toCSV(){trim();var lines=[];for(var r=0;r<data.length;r++){var cells=[];for(var c=0;c<data[r].length;c++){var v=data[r][c]==null?'':String(data[r][c]);if(/[",\n]/.test(v))v='"'+v.replace(/"/g,'""')+'"';cells.push(v);}lines.push(cells.join(','));}return lines.join('\r\n');}
   function toTSV(){trim();var lines=[];for(var r=0;r<data.length;r++){var cells=[];for(var c=0;c<data[r].length;c++)cells.push((data[r][c]==null?'':String(data[r][c])).replace(/\t/g,' '));lines.push(cells.join('\t'));}return lines.join('\n');}
 
+  // ---- rich text sanitize ----
+  function sanitize(html){
+    if(!html)return '';
+    try{
+      var doc=new DOMParser().parseFromString('<div id="_r">'+html+'</div>','text/html');
+      var root=doc.getElementById('_r');
+      var bad=root.querySelectorAll('script,style,iframe,object,embed,link,meta,form,input,button,textarea');
+      for(var i=0;i<bad.length;i++)bad[i].remove();
+      var all=root.querySelectorAll('*');
+      for(var i=0;i<all.length;i++){var el=all[i];
+        for(var a=el.attributes.length-1;a>=0;a--){var n=el.attributes[a].name,v=el.attributes[a].value;
+          if(/^on/i.test(n)){el.removeAttribute(n);}
+          else if((n==='href'||n==='src')&&/^\s*javascript:/i.test(v)){el.removeAttribute(n);}
+        }
+      }
+      return root.innerHTML;
+    }catch(e){return '';}
+  }
+
   // ---- gzip ----
   function gzip(str){var s=new Blob([str]).stream().pipeThrough(new CompressionStream('gzip'));return new Response(s).arrayBuffer();}
   function gunzip(buf){var s=new Blob([buf]).stream().pipeThrough(new DecompressionStream('gzip'));return new Response(s).text();}
@@ -161,18 +227,28 @@ table.sh tr.spacer td{padding:0;border:0;background:transparent}
   function toast(msg){var el=document.getElementById('toast');el.textContent=msg;el.style.opacity='1';el.style.transform='translateX(-50%) translateY(0)';clearTimeout(el._t);el._t=setTimeout(function(){el.style.opacity='0';el.style.transform='translateX(-50%) translateY(20px)';},2400);}
   function setStatus(t,cls){var s=document.getElementById('status');s.textContent=t;s.className='st'+(cls?' '+cls:'');}
 
+  // ---- payload (表＋文書＋モードをまとめて保存) ----
+  function buildPayload(){trim();return JSON.stringify({v:2,mode:mode,sheet:data,rich:rich});}
+  function applyPayload(txt){
+    var p;try{p=JSON.parse(txt);}catch(e){return false;}
+    if(Object.prototype.toString.call(p)==='[object Array]'){data=p;rich='';}
+    else if(p&&typeof p==='object'){data=(Object.prototype.toString.call(p.sheet)==='[object Array]')?p.sheet:[];rich=typeof p.rich==='string'?p.rich:'';if(p.mode==='rich'||p.mode==='sheet')mode=p.mode;}
+    else return false;
+    return true;
+  }
+
   // ---- local cache ----
   function lsKey(){return 'ew_sheet_'+(roomId||'local');}
   var slT;
-  function saveLocal(){clearTimeout(slT);slT=setTimeout(function(){try{localStorage.setItem(lsKey(),JSON.stringify(data));}catch(e){}},400);}
-  function loadLocal(){try{var s=localStorage.getItem(lsKey());if(s){data=JSON.parse(s);return true;}}catch(e){}return false;}
+  function saveLocal(){clearTimeout(slT);slT=setTimeout(function(){try{localStorage.setItem(lsKey(),buildPayload());}catch(e){}},400);}
+  function loadLocal(){try{var s=localStorage.getItem(lsKey());if(s)return applyPayload(s);}catch(e){}return false;}
 
   // ---- server sync ----
   var pushT;
   function schedulePush(){if(!roomId)return;setStatus('保存中…','busy');clearTimeout(pushT);pushT=setTimeout(pushNow,900);}
   function pushNow(){
-    if(!roomId)return;trim();
-    gzip(JSON.stringify(data)).then(function(buf){
+    if(!roomId)return;
+    gzip(buildPayload()).then(function(buf){
       return fetch(API+'?id='+encodeURIComponent(roomId),{method:'POST',headers:{'content-type':'application/octet-stream'},body:buf});
     }).then(function(r){if(!r.ok)throw 0;setStatus('保存済み','ok');})
       .catch(function(){setStatus('保存に失敗','err');});
@@ -184,8 +260,8 @@ table.sh tr.spacer td{padding:0;border:0;background:transparent}
       if(!r.ok)throw 0;return r.arrayBuffer();
     }).then(function(buf){
       if(!buf)return;
-      return gunzip(buf).then(function(txt){data=JSON.parse(txt);renderWindow(true);saveLocal();setStatus('保存済み','ok');});
-    }).catch(function(){setStatus('サーバー未接続（端末内で編集）','err');loadLocal();renderWindow(true);});
+      return gunzip(buf).then(function(txt){applyPayload(txt);syncView();setStatus('保存済み','ok');});
+    }).catch(function(){setStatus('サーバー未接続（端末内で編集）','err');loadLocal();syncView();});
   }
   function openRoom(id){
     id=String(id||'').replace(/[^0-9A-Za-z_-]/g,'').slice(0,32);
@@ -194,14 +270,26 @@ table.sh tr.spacer td{padding:0;border:0;background:transparent}
     pull();
   }
 
-  // ---- events ----
+  // ---- mode / view ----
+  function setModeUI(){
+    for(var i=0;i<modeToggle.children.length;i++){var b=modeToggle.children[i];b.classList.toggle('on',b.dataset&&b.dataset.mode===mode);}
+    sheetModeEl.hidden=(mode!=='sheet');
+    richModeEl.hidden=(mode!=='rich');
+    if(mode==='sheet'){_lf=-1;renderWindow(true);}
+  }
+  function syncView(){richEl.innerHTML=sanitize(rich);_lf=-1;renderWindow(true);setModeUI();}
+  modeToggle.addEventListener('click',function(e){
+    var b=e.target.closest('button');if(!b||!b.dataset.mode)return;
+    mode=b.dataset.mode;setModeUI();saveLocal();schedulePush();
+  });
+
+  // ---- sheet events ----
   grid.addEventListener('input',function(e){var i=e.target;if(i.tagName!=='INPUT')return;setCell(+i.dataset.r,+i.dataset.c,i.value);saveLocal();schedulePush();dimEl.textContent=rows()+' × '+cols();});
   grid.addEventListener('keydown',function(e){var i=e.target;if(i.tagName!=='INPUT')return;var r=+i.dataset.r,c=+i.dataset.c;
     if(e.key==='Enter'){e.preventDefault();focusCell(r+1,c);}else if(e.key==='ArrowDown'){e.preventDefault();focusCell(r+1,c);}else if(e.key==='ArrowUp'){e.preventDefault();focusCell(r-1,c);}});
   function focusCell(r,c){
     if(r<0||c<0)return;
     if(r>=rows()){ensure(r+1,cols());}
-    // ensure row is within rendered window
     var top=r*ROWH;
     if(top<wrap.scrollTop||top>wrap.scrollTop+wrap.clientHeight-2*ROWH){wrap.scrollTop=Math.max(0,top-wrap.clientHeight/2);}
     renderWindow(true);
@@ -233,6 +321,28 @@ table.sh tr.spacer td{padding:0;border:0;background:transparent}
   document.getElementById('room').addEventListener('keydown',function(e){if(e.key==='Enter')openRoom(this.value);});
   document.getElementById('pull').onclick=pull;
 
+  // ---- rich text events ----
+  richEl.addEventListener('input',function(){rich=richEl.innerHTML;saveLocal();schedulePush();});
+  var rtBar=document.getElementById('rtBar');
+  rtBar.addEventListener('mousedown',function(e){if(e.target.closest('button'))e.preventDefault();}); // 選択範囲を保持
+  rtBar.addEventListener('click',function(e){
+    var b=e.target.closest('button');if(!b)return;
+    if(b.id==='richClear'){if(confirm('文書を消去します。よろしいですか？')){richEl.innerHTML='';rich='';saveLocal();schedulePush();toast('クリアしました');}return;}
+    if(b.id==='richCopy'){richCopy();return;}
+    richEl.focus();
+    try{
+      if(b.dataset.block)document.execCommand('formatBlock',false,b.dataset.block);
+      else if(b.dataset.cmd)document.execCommand(b.dataset.cmd,false,null);
+    }catch(e2){}
+    rich=richEl.innerHTML;saveLocal();schedulePush();
+  });
+  function richCopy(){
+    var range=document.createRange();range.selectNodeContents(richEl);
+    var sel=window.getSelection();sel.removeAllRanges();sel.addRange(range);
+    try{document.execCommand('copy');toast('文書をコピーしました');}catch(e){}
+    sel.removeAllRanges();
+  }
+
   // ---- init ----
   var q=location.search.replace(/^\?/,''),m=q.match(/(?:^|&)id=([\w-]+)/);
   roomId=m?m[1]:((q.match(/^([\w-]+)/)||[])[1]||'');
@@ -240,10 +350,10 @@ table.sh tr.spacer td{padding:0;border:0;background:transparent}
   if(roomId){
     document.getElementById('room').value=roomId;
     document.getElementById('pull').hidden=false;
-    loadLocal();renderWindow(true);
+    loadLocal();syncView();
     pull();
   }else{
-    loadLocal();renderWindow(true);
+    loadLocal();syncView();
     setStatus('番号なし（この端末内のみ）','');
   }
 })();
